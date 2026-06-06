@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRC32 Calculator</title>
+    <script>
+        // CRC32 calculat function
+        function calculateCRC32(hexString) {
+            const crc32Table = [];
+            let crc;
+
+            // creating CRC32 table
+            for (let i = 0; i < 256; i++) {
+                crc = i;
+                for (let j = 8; j > 0; j--) {
+                    if (crc & 1) {
+                        crc = (crc >>> 1) ^ 0xedb88320;
+                    } else {
+                        crc = crc >>> 1;
+                    }
+                }
+                crc32Table[i] = crc;
+            }
+
+            // HEX string to bytes
+            const bytes = hexString.replace(/0x|,|\s/g, '').match(/.{2}/g).map(byte => parseInt(byte, 16));
+
+            crc = 0xffffffff;
+            bytes.forEach(byte => {
+                crc = crc32Table[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+            });
+
+            return (crc ^ 0xffffffff) >>> 0;  // Возвращаем результат CRC32
+        }
+
+        // Button handler
+        function onCalculateClick() {
+            const hexInput = document.getElementById("hex_input").value.trim();
+            if (hexInput) {
+                const crcResult = calculateCRC32(hexInput);
+                document.getElementById("crc_result").textContent = "CRC32: " + crcResult.toString(16).toUpperCase().padStart(8, "0");
+            } else {
+                alert("Please enter a valid hex string.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>STM32 CRC32 Calculator</h1>
+    <label for="hex_input">Enter HEX array (C style, e.g. 0x01, 0x02, 0x03):</label><br>
+    <textarea id="hex_input" rows="5" cols="40" placeholder="e.g. 0x01, 0x02, 0x03"></textarea><br><br>
+    <button onclick="onCalculateClick()">Calculate CRC32</button>
+
+    <h2 id="crc_result"></h2>
+</body>
+</html>
