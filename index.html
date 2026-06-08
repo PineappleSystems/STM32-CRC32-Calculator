@@ -4,54 +4,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRC32 Calculator</title>
-    <script>
-        // CRC32 calculat function
-        function calculateCRC32(hexString) {
-            const crc32Table = [];
-            let crc;
-
-            // creating CRC32 table
-            for (let i = 0; i < 256; i++) {
-                crc = i;
-                for (let j = 8; j > 0; j--) {
-                    if (crc & 1) {
-                        crc = (crc >>> 1) ^ 0xedb88320;
-                    } else {
-                        crc = crc >>> 1;
-                    }
-                }
-                crc32Table[i] = crc;
-            }
-
-            // HEX string to bytes
-            const bytes = hexString.replace(/0x|,|\s/g, '').match(/.{2}/g).map(byte => parseInt(byte, 16));
-
-            crc = 0xffffffff;
-            bytes.forEach(byte => {
-                crc = crc32Table[(crc ^ byte) & 0xff] ^ (crc >>> 8);
-            });
-
-            return (crc ^ 0xffffffff) >>> 0;  // Возвращаем результат CRC32
-        }
-
-        // Button handler
-        function onCalculateClick() {
-            const hexInput = document.getElementById("hex_input").value.trim();
-            if (hexInput) {
-                const crcResult = calculateCRC32(hexInput);
-                document.getElementById("crc_result").textContent = "CRC32: " + crcResult.toString(16).toUpperCase().padStart(8, "0");
-            } else {
-                alert("Please enter a valid hex string.");
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>STM32 CRC32 Calculator</h1>
-    <label for="hex_input">Enter HEX array (C style, e.g. 0x01, 0x02, 0x03):</label><br>
-    <textarea id="hex_input" rows="5" cols="40" placeholder="e.g. 0x01, 0x02, 0x03"></textarea><br><br>
-    <button onclick="onCalculateClick()">Calculate CRC32</button>
-
-    <h2 id="crc_result"></h2>
+    <div class="container">
+        <h1>STM32 CRC32 Calculator</h1>
+        
+        <label for="hex_input">Enter HEX array (C style, e.g. 0x01, 0x02, 0x03):</label>
+        <textarea id="hex_input" rows="5" cols="40" placeholder="e.g. 0x01, 0x02, 0x03 or 01 02 03 or 01,02,03"></textarea>
+        
+        <button id="calculate_btn">Calculate CRC32</button>
+        
+        <div id="error_display"></div>
+        
+        <div id="bytes_display" style="display: none;" class="result-section">
+            <div class="bytes-box">
+                <h3>📊 Recognized bytes used in calculation:</h3>
+                <div>
+                    <strong>Number of bytes:</strong> <span id="byte_count">0</span>
+                </div>
+                <div style="margin-top: 10px;">
+                    <strong>Bytes (HEX):</strong>
+                </div>
+                <div id="byte_list" class="byte-list">
+                    <!-- Bytes will be displayed here -->
+                </div>
+                <div style="margin-top: 10px;">
+                    <strong>HEX string:</strong>
+                </div>
+                <div id="hex_info" class="byte-list" style="background-color: #f9f9f9;">
+                    <!-- HEX info will be displayed here -->
+                </div>
+            </div>
+        </div>
+        
+        <div id="crc_result" class="result-section"></div>
+        
+        <div class="info">
+            <strong>Supported input formats:</strong><br>
+            • C-style: 0x01, 0x02, 0x03<br>
+            • Space-separated: 01 02 03<br>
+            • Comma-separated: 01,02,03<br>
+            • Any combination of the above<br>
+            • Case insensitive (both uppercase and lowercase HEX allowed)
+        </div>
+        
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>📋 Algorithm Info</h4>
+                    <ul>
+                        <li>CRC32 IEEE 802.3 (standard)</li>
+                        <li>Polynomial: 0x04C11DB7 (0xEDB88320 reversed)</li>
+                        <li>Initial value: 0xFFFFFFFF</li>
+                        <li>Final XOR: 0xFFFFFFFF</li>
+                        <li>Reflection: Input & Output reflected</li>
+                        <li>Compatible with STM32 hardware CRC</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>🔧 Usage Example</h4>
+                    <ul>
+                        <li>Input: <code>0x01, 0x02, 0x03, 0x04</code></li>
+                        <li>CRC32: <code>0xB63CFBCD</code></li>
+                        <li>Verify with STM32 CRC unit</li>
+                        <li>Matches standard tools like WinRAR, PNG</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>⚙️ Technical Notes</h4>
+                    <ul>
+                        <li>Little-endian byte order</li>
+                        <li>32-bit result (unsigned integer)</li>
+                        <li>Online calculator for embedded systems</li>
+                        <li>No data sent to server (client-side only)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-links">
+                    <a href="https://github.com/PineappleSystems" target="_blank" class="github-link">
+                        🍍 GitHub: PineappleSystems
+                    </a>
+                    <span class="separator">•</span>
+                    <span>📅 2026</span>
+                    <span class="separator">•</span>
+                    <a href="LICENSE" target="_blank" class="license-link">📄 MIT License</a>
+                </div>
+                <div class="footer-note">
+                    For STM32 development • CRC-32/IEEE 802.3 compatible
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <script src="script.js"></script>
 </body>
 </html>
