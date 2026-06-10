@@ -2,7 +2,7 @@
 
 A lightweight, client-side CRC32 calculator web tool designed specifically for STM32 developers and embedded systems engineers. Calculate CRC32 checksums for hexadecimal data using the standard IEEE 802.3 algorithm compatible with STM32 hardware CRC unit.
 
-**Live Demo:** https://pineapplesystems.github.io/STM32-CRC32-Calculator/
+**Live Demo:** https://jsaundersis.github.io/STM32-CRC32-Calculator/
 
 ## 🎯 Features
 
