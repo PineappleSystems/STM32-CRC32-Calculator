@@ -24,6 +24,20 @@ function calculateCRC32(bytes) {
     return (crc ^ 0xffffffff) >>> 0;
 }
 
+// Convert 32-bit value to little-endian 32-bit value
+function toLittleEndian32(value) {
+    // Ensure value is unsigned 32-bit
+    value = value >>> 0;
+    // Extract bytes in little-endian order
+    const byte0 = (value >> 0) & 0xFF;
+    const byte1 = (value >> 8) & 0xFF;
+    const byte2 = (value >> 16) & 0xFF;
+    const byte3 = (value >> 24) & 0xFF;
+    
+    // Reconstruct as little-endian and ensure unsigned
+    return ((byte0 << 24) | (byte1 << 16) | (byte2 << 8) | byte3) >>> 0;
+}
+
 // Parse HEX string to bytes array
 function parseHexToBytes(hexString) {
     // Remove spaces, commas, 0x prefix
@@ -99,6 +113,8 @@ function updateUI(bytes, errors) {
     // Calculate CRC32
     const crcValue = calculateCRC32(bytes);
     const crcHex = crcValue.toString(16).toUpperCase().padStart(8, '0');
+    const crcLittleEndian = toLittleEndian32(crcValue);
+    const crcLittleHex = crcLittleEndian.toString(16).toUpperCase().padStart(8, '0');
     
     // Display result
     resultDiv.innerHTML = `
@@ -106,7 +122,7 @@ function updateUI(bytes, errors) {
             <strong>CRC32 Result:</strong><br>
             Decimal: ${crcValue}<br>
             Hexadecimal: 0x${crcHex}<br>
-            Expected format for STM32: ${crcHex}
+            Expected format for STM32: 0x${crcLittleHex}
         </div>
     `;
     
